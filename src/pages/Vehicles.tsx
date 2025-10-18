@@ -59,22 +59,22 @@ const Vehicles = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <div className="bg-trekGreen-100 py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-trekGray-900">
+      <div className="bg-trekGreen-100 py-8 sm:py-12 lg:py-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-trekGray-900">
               Our Vehicle Fleet
             </h1>
-            <p className="text-lg text-trekGray-700">
+            <p className="text-base sm:text-lg lg:text-xl text-trekGray-700 max-w-3xl mx-auto">
               Discover the perfect vehicle for your next adventure with Trek&Drive.
             </p>
           </div>
         </div>
       </div>
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Vehicle Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {vehicles.map((vehicle) => (
             <VehicleCard key={vehicle.id} {...vehicle} />
           ))}

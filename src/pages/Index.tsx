@@ -70,23 +70,23 @@ const Index = () => {
       {/* Featured Vehicles */}
       <section id="vehicles" className="container-padding">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="section-title">Our Fleet</h2>
-            <p className="section-subtitle">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-trekGray-900">Our Fleet</h2>
+            <p className="text-base sm:text-lg lg:text-xl text-trekGray-700 mb-8 sm:mb-12 max-w-4xl mx-auto px-4">
               Discover our selection of vehicles perfect for any adventure or travel need. 
               Comfort, reliability, and style for every journey.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
             {vehicles.map((vehicle) => (
               <VehicleCard key={vehicle.id} {...vehicle} />
             ))}
           </div>
           
-          <div className="text-center mt-8">
+          <div className="text-center mt-6 sm:mt-8">
             <Link to="/vehicles">
-              <Button className="btn-primary">
+              <Button className="btn-primary text-sm sm:text-base px-6 sm:px-8 py-2 sm:py-3">
                 View All Vehicles
               </Button>
             </Link>
@@ -99,23 +99,23 @@ const Index = () => {
       {/* Features Section */}
       <section className="container-padding bg-trekGreen-500">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
               Why Choose Trek&Drive
             </h2>
-            <p className="text-xl text-trekGreen-100 mb-12 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-trekGreen-100 mb-8 sm:mb-12 max-w-4xl mx-auto px-4">
               We offer more than just car rentals—we provide reliable transportation solutions for every adventure.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {features.map((feature, index) => (
               <div 
                 key={index} 
-                className="bg-white rounded-lg p-8 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                className="bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
               >
-                <h3 className="text-xl font-bold mb-3 text-trekGreen-600">{feature.title}</h3>
-                <p className="text-trekGray-600">{feature.description}</p>
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-trekGreen-600">{feature.title}</h3>
+                <p className="text-sm sm:text-base text-trekGray-600 leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -125,20 +125,20 @@ const Index = () => {
       <Testimonials />
       
       {/* CTA Section */}
-      <section className="bg-trekGray-100 py-16">
+      <section className="bg-trekGray-100 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-trekGreen-600 rounded-2xl p-8 md:p-12 shadow-xl">
-            <div className="md:flex items-center justify-between">
+          <div className="bg-trekGreen-600 rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-xl">
+            <div className="flex flex-col md:flex-row items-center justify-between text-center md:text-left">
               <div className="mb-6 md:mb-0 md:mr-8">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
                   Ready for Your Next Adventure?
                 </h2>
-                <p className="text-trekGreen-100 text-lg">
+                <p className="text-trekGreen-100 text-base sm:text-lg leading-relaxed">
                   Book your vehicle today and hit the road with confidence.
                 </p>
               </div>
               <Link to="/vehicles">
-                <Button className="bg-white text-trekGreen-600 hover:bg-trekGray-100 px-8 py-6 text-lg font-semibold">
+                <Button className="bg-white text-trekGreen-600 hover:bg-trekGray-100 px-6 sm:px-8 py-3 sm:py-4 md:py-6 text-base sm:text-lg font-semibold w-full sm:w-auto">
                   Book Your Car Now
                 </Button>
               </Link>

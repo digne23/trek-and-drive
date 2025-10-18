@@ -4,14 +4,14 @@ import { MapPin, Phone, Mail } from "lucide-react";
 const Footer = () => {
   return (
     <footer className="bg-trekGray-900 text-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
           {/* Company Info */}
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-4">
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
               Trek<span className="text-trekGreen-400">&</span>Drive
             </h3>
-            <p className="text-trekGray-300 mb-4">
+            <p className="text-sm sm:text-base text-trekGray-300 mb-4 leading-relaxed">
               Your reliable partner for adventure and travel. Quality vehicles for every journey.
             </p>
             <div className="flex space-x-4">
@@ -19,7 +19,7 @@ const Footer = () => {
                 href="https://wa.me/250788322882" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-trekGray-300 hover:text-trekGreen-400 transition-colors"
+                className="text-trekGray-300 hover:text-trekGreen-400 transition-colors p-2"
                 title="WhatsApp"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -30,7 +30,7 @@ const Footer = () => {
                 href="https://instagram.com/trek_and_drive" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-trekGray-300 hover:text-trekGreen-400 transition-colors"
+                className="text-trekGray-300 hover:text-trekGreen-400 transition-colors p-2"
                 title="Instagram"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -42,40 +42,40 @@ const Footer = () => {
           
           {/* Contact Info */}
           <div>
-            <h4 className="font-semibold text-xl mb-4">Contact Us</h4>
-            <ul className="space-y-3">
+            <h4 className="font-semibold text-lg sm:text-xl mb-3 sm:mb-4">Contact Us</h4>
+            <ul className="space-y-2 sm:space-y-3">
               <li className="flex items-start">
-                <MapPin className="h-5 w-5 text-trekGreen-400 mr-3 mt-1 flex-shrink-0" />
-                <span className="text-trekGray-300">
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-trekGray-300">
                   Kigali Alliance Business Center<br />
                   KN 5 Rd, Kigali
                 </span>
               </li>
               <li className="flex items-center">
-                <Phone className="h-5 w-5 text-trekGreen-400 mr-3 flex-shrink-0" />
-                <span className="text-trekGray-300">+250 788 322 882</span>
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-trekGray-300">+250 788 322 882</span>
               </li>
               <li className="flex items-center">
-                <Mail className="h-5 w-5 text-trekGreen-400 mr-3 flex-shrink-0" />
-                <span className="text-trekGray-300">manzisteve2000@gmail.com</span>
+                <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-trekGray-300 break-all">manzisteve2000@gmail.com</span>
               </li>
             </ul>
           </div>
           
           {/* Services */}
           <div>
-            <h4 className="font-semibold text-xl mb-4">Our Services</h4>
-            <ul className="space-y-2">
-              <li className="text-trekGray-300">Car Rental</li>
-              <li className="text-trekGray-300">Airport Pickup</li>
-              <li className="text-trekGray-300">Long Distance Travel</li>
-              <li className="text-trekGray-300">Chauffeur Service</li>
+            <h4 className="font-semibold text-lg sm:text-xl mb-3 sm:mb-4">Our Services</h4>
+            <ul className="space-y-1 sm:space-y-2">
+              <li className="text-sm sm:text-base text-trekGray-300">Car Rental</li>
+              <li className="text-sm sm:text-base text-trekGray-300">Airport Pickup</li>
+              <li className="text-sm sm:text-base text-trekGray-300">Long Distance Travel</li>
+              <li className="text-sm sm:text-base text-trekGray-300">Chauffeur Service</li>
             </ul>
           </div>
         </div>
         
-        <div className="border-t border-trekGray-800 mt-10 pt-6 text-center">
-          <p className="text-trekGray-400">
+        <div className="border-t border-trekGray-800 mt-8 sm:mt-10 pt-4 sm:pt-6 text-center">
+          <p className="text-xs sm:text-sm text-trekGray-400">
             &copy; {new Date().getFullYear()} Trek&Drive. All rights reserved.
           </p>
         </div>
