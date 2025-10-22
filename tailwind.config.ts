@@ -128,7 +128,7 @@ export default {
 				'fade-in': 'fade-in 0.5s ease-out forwards',
 			},
 			backgroundImage: {
-				'hero-pattern': "url('/rwanda-kigali002-discord.webp')",
+				'hero-pattern': "url('/road-near-field-countryside-dark-clouds-road-near-field-countryside-dark-clouds-sunset-178399592.webp')",
 			}
 		}
 	},

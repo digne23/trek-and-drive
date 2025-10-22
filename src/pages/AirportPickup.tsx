@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Calendar, Clock, MapPin, Upload, User, Mail, Phone } from "lucide-react";
+import { Calendar, Clock, MapPin, User, Mail, Phone } from "lucide-react";
 
 const AirportPickup = () => {
   const [formData, setFormData] = useState({
@@ -14,9 +14,7 @@ const AirportPickup = () => {
     phone: "",
     pickupDate: "",
     arrivalTime: "",
-    timePeriod: "AM",
     destination: "",
-    ticketDetails: null as File | null,
     selectedContact: ""
   });
 
@@ -34,10 +32,6 @@ const AirportPickup = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setFormData(prev => ({ ...prev, ticketDetails: file }));
-  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -56,22 +50,29 @@ const AirportPickup = () => {
   };
 
   const buildMessage = () => {
-    const ticketInfo = formData.ticketDetails ? `\nTicket Details: ${formData.ticketDetails.name}` : "\nTicket Details: Not provided";
-    
     return `Hello Trek & Drive Team,
 
 I would like to book an airport pickup service.
-Please find my booking details below:
+Please find my complete booking details below:
 
+👤 PERSONAL INFORMATION:
 Name: ${formData.name}
 Email: ${formData.email}
 Phone: ${formData.phone}
 
+✈️ PICKUP DETAILS:
 Pickup Date: ${formData.pickupDate}
-Arrival Time: ${formData.arrivalTime} ${formData.timePeriod}
-Destination: ${formData.destination}${ticketInfo}
+Arrival Time: ${formData.arrivalTime}
+Destination: ${formData.destination}
 
-Kindly confirm the pickup service availability and provide the total cost for the airport pickup service.`;
+Please confirm:
+1. Airport pickup service availability for the requested date and time
+2. Total cost for the airport pickup service
+3. Estimated travel time to destination
+4. Driver contact information
+5. Meeting point at the airport
+
+Thank you for your service!`;
   };
 
   const handleSubmit = async () => {
@@ -83,23 +84,17 @@ Kindly confirm the pickup service availability and provide the total cost for th
     switch (formData.selectedContact) {
       case "whatsapp":
         const whatsappUrl = `https://wa.me/250788322882?text=${encodeURIComponent(message)}`;
-        console.log('WhatsApp URL:', whatsappUrl);
         window.open(whatsappUrl, '_blank');
         break;
         
       case "instagram":
-        // Copy message to clipboard first
         try {
           await navigator.clipboard.writeText(message);
-          // Try to open Instagram DM directly (works on mobile)
           window.open('https://ig.me/m/trek_and_drive', '_blank');
-          // Show alert after a brief delay
           setTimeout(() => {
             alert('Message copied to clipboard! Paste it in the Instagram DM that just opened.');
           }, 500);
         } catch (err) {
-          console.log('Clipboard error:', err);
-          // Fallback: show message in alert
           alert(`Please copy this message and send it to @trek_and_drive on Instagram:\n\n${message}`);
           window.open('https://instagram.com/trek_and_drive', '_blank');
         }
@@ -108,7 +103,6 @@ Kindly confirm the pickup service availability and provide the total cost for th
       case "email":
         const subject = `Airport Pickup Request - ${formData.name}`;
         const body = message;
-        // Use Gmail compose URL which opens in browser
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=manzisteve2000@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(gmailUrl, '_blank');
         break;
@@ -220,25 +214,19 @@ Kindly confirm the pickup service availability and provide the total cost for th
                     
                     <div>
                       <Label htmlFor="arrivalTime" className="text-sm font-medium">Arrival Time *</Label>
-                      <div className="flex gap-2 mt-1">
-                        <Input
-                          id="arrivalTime"
-                          name="arrivalTime"
-                          type="time"
-                          value={formData.arrivalTime}
-                          onChange={handleInputChange}
-                          className={`flex-1 ${errors.arrivalTime ? 'border-red-500' : ''}`}
-                        />
-                        <select
-                          name="timePeriod"
-                          value={formData.timePeriod}
-                          onChange={(e) => setFormData(prev => ({ ...prev, timePeriod: e.target.value }))}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-trekGreen-500"
-                        >
-                          <option value="AM">AM</option>
-                          <option value="PM">PM</option>
-                        </select>
-                      </div>
+                      <Input
+                        id="arrivalTime"
+                        name="arrivalTime"
+                        type="time"
+                        value={formData.arrivalTime}
+                        onChange={handleInputChange}
+                        className={`mt-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${errors.arrivalTime ? 'border-red-500' : ''}`}
+                        step="300"
+                        style={{ 
+                          scrollbarWidth: 'thin',
+                          scrollbarColor: '#d1d5db #f3f4f6'
+                        }}
+                      />
                       {errors.arrivalTime && <p className="text-red-500 text-xs mt-1">{errors.arrivalTime}</p>}
                     </div>
                   </div>
@@ -259,38 +247,16 @@ Kindly confirm the pickup service availability and provide the total cost for th
                       value={formData.destination}
                       onChange={handleInputChange}
                       className={`mt-1 ${errors.destination ? 'border-red-500' : ''}`}
-                      placeholder="Enter your destination address or location"
+                      placeholder="Enter hotel name or destination address"
                       rows={3}
                     />
                     {errors.destination && <p className="text-red-500 text-xs mt-1">{errors.destination}</p>}
                     <p className="text-xs text-gray-500 mt-1">
-                      Please provide the complete address or location where you want to be dropped off.
+                      Please provide the hotel name or complete address where you want to be dropped off.
                     </p>
                   </div>
                 </div>
 
-                {/* Ticket Upload */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-trekGray-800 flex items-center gap-2">
-                    <Upload className="h-5 w-5 text-trekGreen-600" />
-                    Flight Details (Optional)
-                  </h3>
-                  
-                  <div>
-                    <Label htmlFor="ticketDetails" className="text-sm font-medium">Upload Ticket/Booking Details</Label>
-                    <Input
-                      id="ticketDetails"
-                      name="ticketDetails"
-                      type="file"
-                      onChange={handleFileChange}
-                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                      className="mt-1"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Upload your flight ticket, booking confirmation, or any relevant document (PDF, JPG, PNG, DOC, DOCX)
-                    </p>
-                  </div>
-                </div>
 
                 {/* Contact Options */}
                 <div className="space-y-4">
