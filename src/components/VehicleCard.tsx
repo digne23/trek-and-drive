@@ -1,186 +1,73 @@
-import { useState, useEffect } from "react";
-import { X, Calendar, DollarSign } from "lucide-react";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { MessageSquare } from "lucide-react";
+import BookingPopup from "./BookingPopup";
 
-interface BookingPopupProps {
-  isOpen: boolean;
-  onClose: () => void;
-  vehicleName: string;
-  vehiclePrice: number;
+interface VehicleProps {
+  name: string;
+  category: string;
+  passengers: number;
+  price: number;
+  image: string;
 }
 
-const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPopupProps) => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [numberOfDays, setNumberOfDays] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
+const VehicleCard = ({ name, category, passengers, price, image }: VehicleProps) => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
-  // Calculate number of days and total price whenever dates change
-  useEffect(() => {
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      
-      // Calculate the difference in days
-      const diffTime = end.getTime() - start.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      if (diffDays > 0) {
-        setNumberOfDays(diffDays);
-        setTotalPrice(diffDays * vehiclePrice);
-      } else {
-        setNumberOfDays(0);
-        setTotalPrice(0);
-      }
-    } else {
-      setNumberOfDays(0);
-      setTotalPrice(0);
-    }
-  }, [startDate, endDate, vehiclePrice]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Add your booking logic here
-    console.log({
-      vehicleName,
-      startDate,
-      endDate,
-      numberOfDays,
-      totalPrice,
-    });
-    // You can add API call or further processing here
+  const handleBookNow = () => {
+    setIsBookingOpen(true);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white rounded-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-trekGray-500 hover:text-trekGray-700 transition-colors"
-        >
-          <X size={24} />
-        </button>
-
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-trekGray-900 mb-2">Book {vehicleName}</h2>
-          <p className="text-trekGray-600 mb-6">
-            Rate: <span className="font-semibold text-trekGreen-600">{vehiclePrice} RWF</span> per day
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Start Date */}
-            <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-trekGray-700 mb-2">
-                <Calendar size={16} className="inline mr-2" />
-                Start Date
-              </label>
-              <input
-                type="date"
-                id="startDate"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                required
-                className="w-full px-4 py-2 border border-trekGray-300 rounded-lg focus:ring-2 focus:ring-trekGreen-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* End Date */}
-            <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-trekGray-700 mb-2">
-                <Calendar size={16} className="inline mr-2" />
-                End Date
-              </label>
-              <input
-                type="date"
-                id="endDate"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                min={startDate || new Date().toISOString().split('T')[0]}
-                required
-                className="w-full px-4 py-2 border border-trekGray-300 rounded-lg focus:ring-2 focus:ring-trekGreen-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* Price Summary - Shows immediately after dates are selected */}
-            {numberOfDays > 0 && (
-              <div className="bg-trekGreen-50 border-2 border-trekGreen-200 rounded-lg p-4 mt-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-trekGray-700 font-medium">Duration:</span>
-                  <span className="text-trekGray-900 font-semibold">
-                    {numberOfDays} {numberOfDays === 1 ? 'day' : 'days'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-trekGray-700 font-medium">Daily Rate:</span>
-                  <span className="text-trekGray-900 font-semibold">{vehiclePrice} RWF</span>
-                </div>
-                <div className="border-t border-trekGreen-300 pt-2 mt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-trekGray-900">
-                      <DollarSign size={20} className="inline mr-1" />
-                      Total Price:
-                    </span>
-                    <span className="text-2xl font-bold text-trekGreen-600">
-                      {totalPrice.toLocaleString()} RWF
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Additional fields can be added here */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-trekGray-700 mb-2">
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                required
-                className="w-full px-4 py-2 border border-trekGray-300 rounded-lg focus:ring-2 focus:ring-trekGreen-500 focus:border-transparent"
-                placeholder="Enter your full name"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-trekGray-700 mb-2">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                required
-                className="w-full px-4 py-2 border border-trekGray-300 rounded-lg focus:ring-2 focus:ring-trekGreen-500 focus:border-transparent"
-                placeholder="+250 XXX XXX XXX"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                onClick={onClose}
-                variant="outline"
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-trekGreen-500 hover:bg-trekGreen-600 text-white"
-              >
-                Confirm Booking
-              </Button>
-            </div>
-          </form>
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl h-full flex flex-col">
+      <div className="aspect-[16/9] overflow-hidden">
+        <img
+          src={image}
+          alt={name}
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+        />
+      </div>
+      <div className="p-4 sm:p-6 flex-1 flex flex-col">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
+          <div className="mb-3 sm:mb-0">
+            <span className="inline-block bg-trekGreen-100 text-trekGreen-600 px-2 py-1 text-xs font-semibold rounded-full mb-2">
+              {category}
+            </span>
+            <h3 className="text-lg sm:text-xl font-bold text-trekGray-900 leading-tight">{name}</h3>
+          </div>
+          <div className="text-left sm:text-right">
+            <p className="text-trekGreen-600 font-bold text-lg sm:text-xl">{price} RWF</p>
+            <p className="text-trekGray-500 text-xs sm:text-sm">per day</p>
+          </div>
         </div>
-      </Card>
-    </div>
+        
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-auto pt-4 border-t border-trekGray-200 gap-3 sm:gap-0">
+          <div className="flex items-center justify-center sm:justify-start">
+            <div className="text-center">
+              <p className="text-xs sm:text-sm text-trekGray-600">Passengers</p>
+              <p className="font-semibold text-sm sm:text-base">{passengers}</p>
+            </div>
+          </div>
+          <Button 
+            className="bg-trekGreen-500 hover:bg-trekGreen-600 text-white flex items-center justify-center gap-2 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-2"
+            onClick={handleBookNow}
+          >
+            <MessageSquare size={14} className="sm:w-4 sm:h-4" />
+            Book Now
+          </Button>
+        </div>
+      </div>
+      
+      <BookingPopup
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        vehicleName={name}
+        vehiclePrice={price}
+      />
+    </Card>
   );
 };
 
-export default BookingPopup;
+export default VehicleCard;
