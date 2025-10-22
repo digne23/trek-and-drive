@@ -23,6 +23,7 @@ const Navbar = () => {
           <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             <Link to="/" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">Home</Link>
             <Link to="/vehicles" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">Vehicles</Link>
+            <Link to="/airportpickup" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">Airport Pickup</Link>
             <Link to="/about" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">About Us</Link>
             <Link to="/vehicles">
               <Button className="bg-trekGreen-500 hover:bg-trekGreen-600 text-white text-sm lg:text-base px-4 lg:px-6 py-2">Book Now</Button>
@@ -58,6 +59,13 @@ const Navbar = () => {
                 onClick={closeMenu}
               >
                 Vehicles
+              </Link>
+              <Link 
+                to="/airportpickup" 
+                className="px-4 py-3 text-trekGray-800 hover:text-trekGreen-600 hover:bg-trekGreen-50 transition-colors text-base font-medium"
+                onClick={closeMenu}
+              >
+                Airport Pickup
               </Link>
               <Link 
                 to="/about" 

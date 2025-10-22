@@ -19,6 +19,9 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
   const [driverOption, setDriverOption] = useState<string>("");
   const [location, setLocation] = useState<string>("");
 
+  // Get today's date in YYYY-MM-DD format for min date
+  const today = new Date().toISOString().split('T')[0];
+
   const buildMessage = () => {
     const pickup = pickupDate ? pickupDate : "(not set)";
     const ret = returnDate ? returnDate : "(not set)";
@@ -121,6 +124,7 @@ Kindly confirm the vehicle's availability, total rental cost, and any required d
                   id="pickup-date"
                   type="date"
                   value={pickupDate}
+                  min={today}
                   onChange={(e) => setPickupDate(e.target.value)}
                   className="h-10 sm:h-11 text-sm sm:text-base"
                 />
@@ -131,6 +135,7 @@ Kindly confirm the vehicle's availability, total rental cost, and any required d
                   id="return-date"
                   type="date"
                   value={returnDate}
+                  min={pickupDate || today}
                   onChange={(e) => setReturnDate(e.target.value)}
                   className="h-10 sm:h-11 text-sm sm:text-base"
                 />
