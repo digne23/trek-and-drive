@@ -25,7 +25,7 @@ const Hero = () => {
           <div className="flex justify-center">
             <Button 
               onClick={() => navigate("/vehicles")} 
-              className="group relative bg-white/90 hover:bg-white text-trekGreen-600 hover:text-trekGreen-700 text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 flex items-center shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 border-2 border-white/20 hover:border-white/40 backdrop-blur-sm font-semibold"
+              className="group relative bg-white/90 hover:bg-trekGreen-500 text-trekGreen-600 hover:text-white text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 flex items-center shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 border-2 border-white/20 hover:border-trekGreen-400 backdrop-blur-sm font-semibold"
             >
               <Car className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:rotate-12" />
               <span className="relative z-10">Explore Our Fleet</span>
