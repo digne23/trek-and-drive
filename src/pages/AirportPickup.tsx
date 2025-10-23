@@ -410,7 +410,7 @@ Thank you for your service!`;
                   
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <Label htmlFor="flightNumber" className="text-sm font-medium">Flight Number *</Label>
+                      <Label htmlFor="flightNumber" className="text-sm font-medium">Flight Number </Label>
                       <Input
                         id="flightNumber"
                         name="flightNumber"
@@ -425,12 +425,12 @@ Thank you for your service!`;
                     
                     <div className="flex items-end">
                       <div className="text-center w-full">
-                        <span className="text-sm font-medium text-trekGray-600">from</span>
+                        <span className="text-sm font-medium text-trekGray-600"></span>
                       </div>
                     </div>
                     
                     <div>
-                      <Label htmlFor="fromDestination" className="text-sm font-medium">Origin *</Label>
+                      <Label htmlFor="fromDestination" className="text-sm font-medium">From </Label>
                       <Input
                         id="fromDestination"
                         name="fromDestination"
