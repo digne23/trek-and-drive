@@ -19,6 +19,18 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
   const [driverOption, setDriverOption] = useState<string>("");
   const [location, setLocation] = useState<string>("");
 
+  // Compute total days and total price
+  const getNumberOfDays = () => {
+    if (!pickupDate || !returnDate) return 0;
+    const start = new Date(pickupDate);
+    const end = new Date(returnDate);
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const diff = Math.round((end.getTime() - start.getTime()) / msPerDay);
+    return diff > 0 ? diff : 0;
+  };
+  const totalDays = getNumberOfDays();
+  const totalPrice = totalDays * vehiclePrice;
+
   // Get today's date in YYYY-MM-DD format for min date
   const today = new Date().toISOString().split('T')[0];
 
@@ -143,10 +155,10 @@ Kindly confirm the vehicle's availability, total rental cost, and any required d
             </div>
 
             <div>
-              <Label htmlFor="vehicle-price" className="text-sm sm:text-base">Price per day</Label>
+              <Label htmlFor="vehicle-price" className="text-sm sm:text-base">Price</Label>
               <Input
                 id="vehicle-price"
-                value={`${vehiclePrice} RWF`}
+                value={totalDays > 0 ? `${totalPrice.toLocaleString()} RWF (${totalDays} day${totalDays > 1 ? 's' : ''})` : `${vehiclePrice.toLocaleString()} RWF / day`}
                 readOnly
                 className="bg-gray-50 text-sm sm:text-base h-10 sm:h-11"
               />

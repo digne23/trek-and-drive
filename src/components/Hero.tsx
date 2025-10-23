@@ -8,7 +8,7 @@ const Hero = () => {
   return (
     <div className="relative min-h-screen flex flex-col">
       {/* Hero Image Section */}
-      <div className="relative flex-1 bg-hero-pattern bg-cover bg-center">
+      <div className="relative flex-1 bg-cover bg-center" style={{ backgroundImage: "url('/Nyungwe_National_Park (1).jpg')" }}>
         <div className="absolute inset-0 bg-black bg-opacity-30"></div>
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-24 lg:py-32 flex items-center justify-center min-h-screen">
           <div className="max-w-5xl mx-auto text-center">
