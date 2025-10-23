@@ -18,6 +18,7 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
   const [returnDate, setReturnDate] = useState<string>("");
   const [driverOption, setDriverOption] = useState<string>("");
   const [location, setLocation] = useState<string>("");
+  const [upcountryLocation, setUpcountryLocation] = useState<string>("");
 
   // Compute total days and total price
   const getNumberOfDays = () => {
@@ -29,7 +30,14 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
     return diff > 0 ? diff : 0;
   };
   const totalDays = getNumberOfDays();
-  const totalPrice = totalDays * vehiclePrice;
+  const upcountrySurchargePerDay = location === "Upcountry" ? 10000 : 0;
+  const baseTotalPrice = totalDays * (vehiclePrice + upcountrySurchargePerDay);
+
+  // Deposit logic - only for Solo Drive
+  const depositAmount = driverOption === "Solo Drive"
+    ? (totalDays >= 1 && totalDays <= 10 ? 50000 : (totalDays >= 11 ? 100000 : 0))
+    : 0;
+  const grandTotalPrice = baseTotalPrice + depositAmount;
 
   // Get today's date in YYYY-MM-DD format for min date
   const today = new Date().toISOString().split('T')[0];
@@ -39,21 +47,18 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
     const ret = returnDate ? returnDate : "(not set)";
     const driver = driverOption ? driverOption : "(not selected)";
     const loc = location ? location : "(not selected)";
-    
-    return `Hello Trek & Drive Team,
+    const upLoc = location === "Upcountry" && upcountryLocation ? ` (Location: ${upcountryLocation})` : "";
 
-I would like to book the ${vehicleName} for my upcoming trip.
-Please find my booking details below:
+    const days = totalDays;
+    // For message only: show adjusted price if upcountry (e.g., 60000 becomes 70000)
+    const messagePerDay = location === "Upcountry" ? vehiclePrice + 10000 : vehiclePrice;
+    const messageTotalPrice = (days * messagePerDay) + depositAmount;
+    const depositLine = depositAmount > 0 ? `\nDeposit (refundable): ${depositAmount.toLocaleString()} RWF` : "";
+    const pricing = days > 0
+      ? `\nPrice per day: ${messagePerDay.toLocaleString()} RWF\nDays: ${days}${depositLine ? `\n${depositLine}` : ""}\nGrand total: ${messageTotalPrice.toLocaleString()} RWF`
+      : "";
 
-Pickup Date: ${pickup}
-
-Return Date: ${ret}
-
-Driver Option: ${driver}
-
-Destination Location: ${loc}
-
-Kindly confirm the vehicle's availability, total rental cost, and any required documentation for the booking process.`;
+    return `Hello Trek & Drive Team,\n\nI would like to book the ${vehicleName} for my upcoming trip. Please find my booking details below:\n\nPickup Date: ${pickup}\nReturn Date: ${ret}\nDriver Option: ${driver}\nDestination: ${loc}${upLoc}${pricing ? `\n\n${pricing}` : ""}\n\nKindly confirm the vehicle's availability and any required documentation for the booking process.`;
   };
 
   const handleBookNow = async () => {
@@ -155,18 +160,8 @@ Kindly confirm the vehicle's availability, total rental cost, and any required d
             </div>
 
             <div>
-              <Label htmlFor="vehicle-price" className="text-sm sm:text-base">Price</Label>
-              <Input
-                id="vehicle-price"
-                value={totalDays > 0 ? `${totalPrice.toLocaleString()} RWF (${totalDays} day${totalDays > 1 ? 's' : ''})` : `${vehiclePrice.toLocaleString()} RWF / day`}
-                readOnly
-                className="bg-gray-50 text-sm sm:text-base h-10 sm:h-11"
-              />
-            </div>
-
-            <div>
               <Label className="text-sm sm:text-base">Driver Option</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mt-2">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-2">
                 <Button
                   type="button"
                   variant={driverOption === "Solo Drive" ? "default" : "outline"}
@@ -184,6 +179,25 @@ Kindly confirm the vehicle's availability, total rental cost, and any required d
                   Professional Chauffeur
                 </Button>
               </div>
+              {driverOption === "Professional Chauffeur" && (
+                <p className="text-xs sm:text-sm text-trekGreen-700 mt-2">
+                  Additional chauffeur service fee may occur according to the trip.
+                </p>
+              )}
+              {driverOption === "Solo Drive" && depositAmount > 0 && (
+                <div className="mt-3">
+                  <Label htmlFor="deposit" className="text-sm sm:text-base">Deposit</Label>
+                  <Input
+                    id="deposit"
+                    value={`${depositAmount.toLocaleString()} RWF`}
+                    readOnly
+                    className="bg-gray-50 text-sm sm:text-base h-10 sm:h-11"
+                  />
+                  <p className="text-xs sm:text-sm text-trekGreen-700 mt-1">
+                    Returned after drop-off if no damage or missing items.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div>
@@ -214,6 +228,44 @@ Kindly confirm the vehicle's availability, total rental cost, and any required d
                   Mixed Trip
                 </Button>
               </div>
+              {location === "Upcountry" && (
+                <div className="mt-3">
+                  <Label className="text-sm sm:text-base">Upcountry Location</Label>
+                  <Input
+                    value={upcountryLocation}
+                    onChange={(e) => setUpcountryLocation(e.target.value)}
+                    placeholder="e.g., Karongi"
+                    className="h-10 sm:h-11 mt-1"
+                  />
+                  {totalDays > 0 && (
+                    <p className="text-xs sm:text-sm text-trekGreen-700 mt-2">
+                      +10,000 RWF per day upcountry surcharge applies ({totalDays} day{totalDays > 1 ? 's' : ''} → {(totalDays * 10000).toLocaleString()} RWF).
+                    </p>
+                  )}
+                </div>
+              )}
+              {location === "Mixed Trip" && (
+                <p className="text-xs sm:text-sm text-trekGreen-700 mt-2">
+                  Price to be discussed based on route (Kigali & upcountry days).
+                </p>
+              )}
+            </div>
+
+            {/* Total Price Field */}
+            <div>
+              <Label htmlFor="total-price" className="text-sm sm:text-base">Total Price</Label>
+              <Input
+                id="total-price"
+                value={
+                  totalDays > 0
+                    ? (location === "Mixed Trip"
+                        ? "To be discussed"
+                        : `${grandTotalPrice.toLocaleString()} RWF (${totalDays} day${totalDays > 1 ? 's' : ''})`)
+                    : "Select dates to see total"
+                }
+                readOnly
+                className="bg-gray-50 text-sm sm:text-base h-10 sm:h-11"
+              />
             </div>
           </div>
 

@@ -3,15 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Calendar, Clock, MapPin, User, Mail, Phone } from "lucide-react";
+import { Calendar, Clock, MapPin, User, Mail, Phone, Plane } from "lucide-react";
 
 const AirportPickup = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    countryCode: "+250",
     phone: "",
+    flightNumber: "",
+    fromDestination: "",
     pickupDate: "",
     arrivalTime: "",
     destination: "",
@@ -23,13 +27,186 @@ const AirportPickup = () => {
   // Get today's date in YYYY-MM-DD format for min date
   const today = new Date().toISOString().split('T')[0];
 
+  // Country codes with flags (full country names)
+  const countryCodes = [
+    { code: "+213", country: "Algeria", flag: "🇩🇿" },
+    { code: "+244", country: "Angola", flag: "🇦🇴" },
+    { code: "+54", country: "Argentina", flag: "🇦🇷" },
+    { code: "+374", country: "Armenia", flag: "🇦🇲" },
+    { code: "+297", country: "Aruba", flag: "🇦🇼" },
+    { code: "+61", country: "Australia", flag: "🇦🇺" },
+    { code: "+43", country: "Austria", flag: "🇦🇹" },
+    { code: "+973", country: "Bahrain", flag: "🇧🇭" },
+    { code: "+880", country: "Bangladesh", flag: "🇧🇩" },
+    { code: "+32", country: "Belgium", flag: "🇧🇪" },
+    { code: "+229", country: "Benin", flag: "🇧🇯" },
+    { code: "+591", country: "Bolivia", flag: "🇧🇴" },
+    { code: "+387", country: "Bosnia and Herzegovina", flag: "🇧🇦" },
+    { code: "+267", country: "Botswana", flag: "🇧🇼" },
+    { code: "+55", country: "Brazil", flag: "🇧🇷" },
+    { code: "+246", country: "British Indian Ocean Territory", flag: "🇮🇴" },
+    { code: "+673", country: "Brunei", flag: "🇧🇳" },
+    { code: "+359", country: "Bulgaria", flag: "🇧🇬" },
+    { code: "+226", country: "Burkina Faso", flag: "🇧🇫" },
+    { code: "+257", country: "Burundi", flag: "🇧🇮" },
+    { code: "+855", country: "Cambodia", flag: "🇰🇭" },
+    { code: "+237", country: "Cameroon", flag: "🇨🇲" },
+    { code: "+1", country: "Canada", flag: "🇨🇦" },
+    { code: "+238", country: "Cape Verde", flag: "🇨🇻" },
+    { code: "+236", country: "Central African Republic", flag: "🇨🇫" },
+    { code: "+235", country: "Chad", flag: "🇹🇩" },
+    { code: "+56", country: "Chile", flag: "🇨🇱" },
+    { code: "+86", country: "China", flag: "🇨🇳" },
+    { code: "+57", country: "Colombia", flag: "🇨🇴" },
+    { code: "+269", country: "Comoros", flag: "🇰🇲" },
+    { code: "+242", country: "Congo", flag: "🇨🇬" },
+    { code: "+506", country: "Costa Rica", flag: "🇨🇷" },
+    { code: "+225", country: "Côte d’Ivoire", flag: "🇨🇮" },
+    { code: "+385", country: "Croatia", flag: "🇭🇷" },
+    { code: "+53", country: "Cuba", flag: "🇨🇺" },
+    { code: "+357", country: "Cyprus", flag: "🇨🇾" },
+    { code: "+420", country: "Czechia", flag: "🇨🇿" },
+    { code: "+45", country: "Denmark", flag: "🇩🇰" },
+    { code: "+253", country: "Djibouti", flag: "🇩🇯" },
+    { code: "+1", country: "Dominican Republic", flag: "🇩🇴" },
+    { code: "+593", country: "Ecuador", flag: "🇪🇨" },
+    { code: "+20", country: "Egypt", flag: "🇪🇬" },
+    { code: "+503", country: "El Salvador", flag: "🇸🇻" },
+    { code: "+240", country: "Equatorial Guinea", flag: "🇬🇶" },
+    { code: "+291", country: "Eritrea", flag: "🇪🇷" },
+    { code: "+372", country: "Estonia", flag: "🇪🇪" },
+    { code: "+268", country: "Eswatini", flag: "🇸🇿" },
+    { code: "+251", country: "Ethiopia", flag: "🇪🇹" },
+    { code: "+298", country: "Faroe Islands", flag: "🇫🇴" },
+    { code: "+358", country: "Finland", flag: "🇫🇮" },
+    { code: "+33", country: "France", flag: "🇫🇷" },
+    { code: "+241", country: "Gabon", flag: "🇬🇦" },
+    { code: "+220", country: "The Gambia", flag: "🇬🇲" },
+    { code: "+995", country: "Georgia", flag: "🇬🇪" },
+    { code: "+49", country: "Germany", flag: "🇩🇪" },
+    { code: "+233", country: "Ghana", flag: "🇬🇭" },
+    { code: "+30", country: "Greece", flag: "🇬🇷" },
+    { code: "+299", country: "Greenland", flag: "🇬🇱" },
+    { code: "+502", country: "Guatemala", flag: "🇬🇹" },
+    { code: "+224", country: "Guinea", flag: "🇬🇳" },
+    { code: "+245", country: "Guinea-Bissau", flag: "🇬🇼" },
+    { code: "+509", country: "Haiti", flag: "🇭🇹" },
+    { code: "+504", country: "Honduras", flag: "🇭🇳" },
+    { code: "+36", country: "Hungary", flag: "🇭🇺" },
+    { code: "+354", country: "Iceland", flag: "🇮🇸" },
+    { code: "+91", country: "India", flag: "🇮🇳" },
+    { code: "+62", country: "Indonesia", flag: "🇮🇩" },
+    { code: "+98", country: "Iran", flag: "🇮🇷" },
+    { code: "+964", country: "Iraq", flag: "🇮🇶" },
+    { code: "+353", country: "Ireland", flag: "🇮🇪" },
+    { code: "+972", country: "Israel", flag: "🇮🇱" },
+    { code: "+39", country: "Italy", flag: "🇮🇹" },
+    { code: "+81", country: "Japan", flag: "🇯🇵" },
+    { code: "+962", country: "Jordan", flag: "🇯🇴" },
+    { code: "+7", country: "Kazakhstan", flag: "🇰🇿" },
+    { code: "+254", country: "Kenya", flag: "🇰🇪" },
+    { code: "+965", country: "Kuwait", flag: "🇰🇼" },
+    { code: "+856", country: "Laos", flag: "🇱🇦" },
+    { code: "+371", country: "Latvia", flag: "🇱🇻" },
+    { code: "+961", country: "Lebanon", flag: "🇱🇧" },
+    { code: "+266", country: "Lesotho", flag: "🇱🇸" },
+    { code: "+218", country: "Libya", flag: "🇱🇾" },
+    { code: "+423", country: "Liechtenstein", flag: "🇱🇮" },
+    { code: "+370", country: "Lithuania", flag: "🇱🇹" },
+    { code: "+352", country: "Luxembourg", flag: "🇱🇺" },
+    { code: "+261", country: "Madagascar", flag: "🇲🇬" },
+    { code: "+265", country: "Malawi", flag: "🇲🇼" },
+    { code: "+60", country: "Malaysia", flag: "🇲🇾" },
+    { code: "+960", country: "Maldives", flag: "🇲🇻" },
+    { code: "+223", country: "Mali", flag: "🇲🇱" },
+    { code: "+356", country: "Malta", flag: "🇲🇹" },
+    { code: "+230", country: "Mauritius", flag: "🇲🇺" },
+    { code: "+262", country: "Reunion", flag: "🇷🇪" },
+    { code: "+52", country: "Mexico", flag: "🇲🇽" },
+    { code: "+373", country: "Moldova", flag: "🇲🇩" },
+    { code: "+377", country: "Monaco", flag: "🇲🇨" },
+    { code: "+976", country: "Mongolia", flag: "🇲🇳" },
+    { code: "+382", country: "Montenegro", flag: "🇲🇪" },
+    { code: "+212", country: "Morocco", flag: "🇲🇦" },
+    { code: "+258", country: "Mozambique", flag: "🇲🇿" },
+    { code: "+95", country: "Myanmar", flag: "🇲🇲" },
+    { code: "+264", country: "Namibia", flag: "🇳🇦" },
+    { code: "+977", country: "Nepal", flag: "🇳🇵" },
+    { code: "+31", country: "Netherlands", flag: "🇳🇱" },
+    { code: "+64", country: "New Zealand", flag: "🇳🇿" },
+    { code: "+505", country: "Nicaragua", flag: "🇳🇮" },
+    { code: "+227", country: "Niger", flag: "🇳🇪" },
+    { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+    { code: "+47", country: "Norway", flag: "🇳🇴" },
+    { code: "+968", country: "Oman", flag: "🇴🇲" },
+    { code: "+92", country: "Pakistan", flag: "🇵🇰" },
+    { code: "+507", country: "Panama", flag: "🇵🇦" },
+    { code: "+595", country: "Paraguay", flag: "🇵🇾" },
+    { code: "+51", country: "Peru", flag: "🇵🇪" },
+    { code: "+63", country: "Philippines", flag: "🇵🇭" },
+    { code: "+48", country: "Poland", flag: "🇵🇱" },
+    { code: "+351", country: "Portugal", flag: "🇵🇹" },
+    { code: "+974", country: "Qatar", flag: "🇶🇦" },
+    { code: "+40", country: "Romania", flag: "🇷🇴" },
+    { code: "+7", country: "Russia", flag: "🇷🇺" },
+    { code: "+250", country: "Rwanda", flag: "🇷🇼" },
+    { code: "+966", country: "Saudi Arabia", flag: "🇸🇦" },
+    { code: "+221", country: "Senegal", flag: "🇸🇳" },
+    { code: "+248", country: "Seychelles", flag: "🇸🇨" },
+    { code: "+232", country: "Sierra Leone", flag: "🇸🇱" },
+    { code: "+65", country: "Singapore", flag: "🇸🇬" },
+    { code: "+421", country: "Slovakia", flag: "🇸🇰" },
+    { code: "+386", country: "Slovenia", flag: "🇸🇮" },
+    { code: "+27", country: "South Africa", flag: "🇿🇦" },
+    { code: "+82", country: "South Korea", flag: "🇰🇷" },
+    { code: "+34", country: "Spain", flag: "🇪🇸" },
+    { code: "+94", country: "Sri Lanka", flag: "🇱🇰" },
+    { code: "+249", country: "Sudan", flag: "🇸🇩" },
+    { code: "+597", country: "Suriname", flag: "🇸🇷" },
+    { code: "+268", country: "Eswatini", flag: "🇸🇿" },
+    { code: "+46", country: "Sweden", flag: "🇸🇪" },
+    { code: "+41", country: "Switzerland", flag: "🇨🇭" },
+    { code: "+963", country: "Syria", flag: "🇸🇾" },
+    { code: "+255", country: "Tanzania", flag: "🇹🇿" },
+    { code: "+66", country: "Thailand", flag: "🇹🇭" },
+    { code: "+228", country: "Togo", flag: "🇹🇬" },
+    { code: "+216", country: "Tunisia", flag: "🇹🇳" },
+    { code: "+90", country: "Türkiye", flag: "🇹🇷" },
+    { code: "+256", country: "Uganda", flag: "🇺🇬" },
+    { code: "+380", country: "Ukraine", flag: "🇺🇦" },
+    { code: "+971", country: "United Arab Emirates", flag: "🇦🇪" },
+    { code: "+44", country: "United Kingdom", flag: "🇬🇧" },
+    { code: "+1", country: "United States", flag: "🇺🇸" },
+    { code: "+598", country: "Uruguay", flag: "🇺🇾" },
+    { code: "+998", country: "Uzbekistan", flag: "🇺🇿" },
+    { code: "+58", country: "Venezuela", flag: "🇻🇪" },
+    { code: "+84", country: "Vietnam", flag: "🇻🇳" },
+    { code: "+260", country: "Zambia", flag: "🇿🇲" },
+    { code: "+263", country: "Zimbabwe", flag: "🇿🇼" }
+  ];
+
+  // Sort countries alphabetically by full country name
+  const sortedCountryCodes = [...countryCodes].sort((a, b) => a.country.localeCompare(b.country));
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Only allow numbers for phone field
+    if (name === "phone") {
+      const numericValue = value.replace(/[^0-9]/g, "");
+      setFormData(prev => ({ ...prev, [name]: numericValue }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
+  };
+
+  const handleCountryCodeChange = (value: string) => {
+    setFormData(prev => ({ ...prev, countryCode: value }));
   };
 
 
@@ -40,6 +217,8 @@ const AirportPickup = () => {
     if (!formData.email.trim()) newErrors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+    if (!formData.flightNumber.trim()) newErrors.flightNumber = "Flight number is required";
+    if (!formData.fromDestination.trim()) newErrors.fromDestination = "Origin destination is required";
     if (!formData.pickupDate) newErrors.pickupDate = "Pickup date is required";
     if (!formData.arrivalTime) newErrors.arrivalTime = "Arrival time is required";
     if (!formData.destination.trim()) newErrors.destination = "Destination is required";
@@ -50,6 +229,16 @@ const AirportPickup = () => {
   };
 
   const buildMessage = () => {
+    // Format arrival time to include AM/PM
+    const formatTime = (timeString: string) => {
+      if (!timeString) return timeString;
+      const [hours, minutes] = timeString.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
+    };
+
     return `Hello Trek & Drive Team,
 
 I would like to book an airport pickup service.
@@ -58,11 +247,16 @@ Please find my complete booking details below:
 👤 PERSONAL INFORMATION:
 Name: ${formData.name}
 Email: ${formData.email}
-Phone: ${formData.phone}
+Phone: ${formData.countryCode} ${formData.phone}
 
-✈️ PICKUP DETAILS:
+✈️ FLIGHT DETAILS:
+Flight Number: ${formData.flightNumber}
+From: ${formData.fromDestination}
+To: Kigali International Airport
+
+🚗 PICKUP DETAILS:
 Pickup Date: ${formData.pickupDate}
-Arrival Time: ${formData.arrivalTime}
+Arrival Time: ${formatTime(formData.arrivalTime)}
 Destination: ${formData.destination}
 
 Please confirm:
@@ -177,16 +371,77 @@ Thank you for your service!`;
                   
                   <div>
                     <Label htmlFor="phone" className="text-sm font-medium">Phone Number *</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className={`mt-1 ${errors.phone ? 'border-red-500' : ''}`}
-                      placeholder="Enter your phone number"
-                    />
+                    <div className="flex gap-2 mt-1">
+                      <Select value={formData.countryCode} onValueChange={handleCountryCodeChange}>
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {sortedCountryCodes.map((country) => (
+                            <SelectItem key={`${country.country}-${country.code}`} value={country.code}>
+                              <span className="flex items-center gap-2">
+                                <span>{country.flag}</span>
+                                <span>{country.country} ({country.code})</span>
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className={`flex-1 ${errors.phone ? 'border-red-500' : ''}`}
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
                     {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                  </div>
+                </div>
+
+                {/* Flight Details */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-trekGray-800 flex items-center gap-2">
+                    <Plane className="h-5 w-5 text-trekGreen-600" />
+                    Flight Details
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="flightNumber" className="text-sm font-medium">Flight Number *</Label>
+                      <Input
+                        id="flightNumber"
+                        name="flightNumber"
+                        type="text"
+                        value={formData.flightNumber}
+                        onChange={handleInputChange}
+                        className={`mt-1 ${errors.flightNumber ? 'border-red-500' : ''}`}
+                        placeholder="e.g., WB123"
+                      />
+                      {errors.flightNumber && <p className="text-red-500 text-xs mt-1">{errors.flightNumber}</p>}
+                    </div>
+                    
+                    <div className="flex items-end">
+                      <div className="text-center w-full">
+                        <span className="text-sm font-medium text-trekGray-600">from</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="fromDestination" className="text-sm font-medium">Origin *</Label>
+                      <Input
+                        id="fromDestination"
+                        name="fromDestination"
+                        type="text"
+                        value={formData.fromDestination}
+                        onChange={handleInputChange}
+                        className={`mt-1 ${errors.fromDestination ? 'border-red-500' : ''}`}
+                        placeholder="e.g., Nairobi"
+                      />
+                      {errors.fromDestination && <p className="text-red-500 text-xs mt-1">{errors.fromDestination}</p>}
+                    </div>
                   </div>
                 </div>
 
