@@ -65,20 +65,27 @@ const About = () => {
                   At <span className="text-trekGreen-600">Trek</span><span className="text-trekGray-900">&</span><span className="text-trekGreen-600">Drive</span>, we value consistency, honesty, and convenience. From quick airport pickups to long-distance adventures, we're committed to keeping your journey smooth, safe, and memorable.
                 </p>
 
-                <div className="text-center">
-                  <p className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3">
-                    Go smooth, Go further, Go with
-                  </p>
-                  <div className="flex items-center justify-center">
-                    <img 
-                      src="/logo.png" 
-                      alt="Trek & Drive Logo" 
-                      className="h-6 w-6 sm:h-8 sm:w-8 mr-2"
+                <div className="text-center mt-8 sm:mt-10 pt-6 sm:pt-8 border-t-2 border-trekGreen-200">
+                  <div className="relative inline-block">
+                    <div className="absolute inset-0 bg-gradient-to-r from-trekGreen-400 to-trekGreen-500 blur-xl opacity-20 rounded-full"></div>
+                    <p className="relative text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 sm:mb-4 tracking-tight leading-tight">
+                      <span className="bg-gradient-to-r from-trekGreen-600 via-trekGreen-500 to-trekGreen-600 bg-clip-text text-transparent italic">
+                        Go smooth, Go further,
+                      </span>
+                      <br />
+                      <span className="text-trekGray-800 italic">Go with</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-center mt-4">
+                    <img
+                      src="/logo.png"
+                      alt="Trek & Drive Logo"
+                      className="h-8 w-8 sm:h-10 sm:w-10 mr-3 drop-shadow-md"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
                     />
-                    <span className="text-lg sm:text-xl font-bold">
+                    <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">
                       <span className="text-trekGreen-600">Trek</span><span className="text-trekGray-900">&</span><span className="text-trekGreen-600">Drive</span>
                     </span>
                   </div>

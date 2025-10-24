@@ -1,4 +1,4 @@
-
+import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail } from "lucide-react";
 
 const Footer = () => {
@@ -66,10 +66,26 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-lg sm:text-xl mb-3 sm:mb-4">Our Services</h4>
             <ul className="space-y-1 sm:space-y-2">
-              <li className="text-sm sm:text-base text-trekGray-300">Car Rental</li>
-              <li className="text-sm sm:text-base text-trekGray-300">Airport Pickup</li>
-              <li className="text-sm sm:text-base text-trekGray-300">Long Distance Travel</li>
-              <li className="text-sm sm:text-base text-trekGray-300">Chauffeur Service</li>
+              <li>
+                <Link to="/vehicles" className="text-sm sm:text-base text-trekGray-300 hover:text-trekGreen-400 transition-colors">
+                  Car Rental
+                </Link>
+              </li>
+              <li>
+                <Link to="/airportpickup" className="text-sm sm:text-base text-trekGray-300 hover:text-trekGreen-400 transition-colors">
+                  Airport Pickup
+                </Link>
+              </li>
+              <li>
+                <Link to="/longdistancetravel" className="text-sm sm:text-base text-trekGray-300 hover:text-trekGreen-400 transition-colors">
+                  Long Distance Travel
+                </Link>
+              </li>
+              <li>
+                <Link to="/vehicles" className="text-sm sm:text-base text-trekGray-300 hover:text-trekGreen-400 transition-colors">
+                  Chauffeur Service
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
