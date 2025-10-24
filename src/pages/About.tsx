@@ -68,24 +68,24 @@ const About = () => {
                 <div className="text-center mt-8 sm:mt-10 pt-6 sm:pt-8 border-t-2 border-trekGreen-200">
                   <div className="relative inline-block">
                     <div className="absolute inset-0 bg-gradient-to-r from-trekGreen-400 to-trekGreen-500 blur-xl opacity-20 rounded-full"></div>
-                    <p className="relative text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 sm:mb-4 tracking-tight leading-tight">
-                      <span className="bg-gradient-to-r from-trekGreen-600 via-trekGreen-500 to-trekGreen-600 bg-clip-text text-transparent italic">
+                    <p className="relative text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 tracking-tight leading-tight italic">
+                      <span className="bg-gradient-to-r from-trekGreen-600 via-trekGreen-500 to-trekGreen-600 bg-clip-text text-transparent">
                         Go smooth, Go further,
                       </span>
                       <br />
-                      <span className="text-trekGray-800 italic">Go with</span>
+                      <span className="text-trekGray-800">Go with</span>
                     </p>
                   </div>
                   <div className="flex items-center justify-center mt-4">
                     <img
                       src="/logo.png"
                       alt="Trek & Drive Logo"
-                      className="h-8 w-8 sm:h-10 sm:w-10 mr-3 drop-shadow-md"
+                      className="h-7 w-7 sm:h-8 sm:w-8 mr-2 drop-shadow-md"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
                     />
-                    <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">
+                    <span className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight">
                       <span className="text-trekGreen-600">Trek</span><span className="text-trekGray-900">&</span><span className="text-trekGreen-600">Drive</span>
                     </span>
                   </div>
