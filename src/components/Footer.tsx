@@ -70,12 +70,13 @@ const Footer = () => {
                 </a>
               </li>
               <li className="flex items-center">
-                <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 flex-shrink-0" />
                 <a
                   href="mailto:trekanddriverentals@gmail.com"
-                  className="text-sm sm:text-base text-trekGray-300 hover:text-trekGreen-400 transition-colors break-all"
+                  className="flex items-center text-sm sm:text-base text-trekGray-300 hover:text-trekGreen-400 transition-colors"
+                  title="Send us an email"
                 >
-                  trekanddriverentals@gmail.com
+                  <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 flex-shrink-0" />
+                  Send us an email
                 </a>
               </li>
             </ul>
