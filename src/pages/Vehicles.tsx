@@ -59,8 +59,10 @@ const Vehicles = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <div className="bg-trekGreen-100 py-8 sm:py-12 lg:py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-br from-trekGreen-100 via-trekGreen-200 to-trekGreen-300 py-8 sm:py-12 lg:py-16 overflow-hidden">
+        <div className="absolute inset-0 bg-hero-pattern bg-cover bg-center opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-trekGreen-100/80 via-trekGreen-200/80 to-trekGreen-300/80"></div>
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto text-center">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-trekGray-900">
               Our Vehicle Fleet
@@ -70,7 +72,7 @@ const Vehicles = () => {
             </p>
           </div>
         </div>
-      </div>
+      </section>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Vehicle Grid */}

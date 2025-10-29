@@ -27,7 +27,8 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
     const end = new Date(returnDate);
     const msPerDay = 1000 * 60 * 60 * 24;
     const diff = Math.round((end.getTime() - start.getTime()) / msPerDay);
-    return diff > 0 ? diff : 0;
+    // Add 1 to make it inclusive (e.g., 29th to 31st = 3 days, not 2)
+    return diff >= 0 ? diff + 1 : 0;
   };
   const totalDays = getNumberOfDays();
   const upcountrySurchargePerDay = location === "Upcountry" ? 10000 : 0;

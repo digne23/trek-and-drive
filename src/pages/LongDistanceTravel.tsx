@@ -272,13 +272,15 @@ Thank you for your service!`;
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-trekGreen-500 to-trekGreen-600 text-white py-16 sm:py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-br from-trekGreen-100 via-trekGreen-200 to-trekGreen-300 py-16 sm:py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-hero-pattern bg-cover bg-center opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-trekGreen-100/80 via-trekGreen-200/80 to-trekGreen-300/80"></div>
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-trekGray-900">
               Long Distance Travel
             </h1>
-            <p className="text-lg sm:text-xl text-trekGreen-100 mb-8">
+            <p className="text-lg sm:text-xl text-trekGray-800 mb-8">
               Planning a long journey? Let us make your trip comfortable and safe.
               Contact us for your long distance travel needs.
             </p>
