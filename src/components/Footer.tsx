@@ -47,13 +47,27 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                 <span className="text-sm sm:text-base text-trekGray-300">
-                  Kigali Alliance Business Center<br />
+                  <a
+                    href="https://www.google.com/maps/place/?q=place_id:ChIJVVUFGvOm3BkR9FgFnZxyFQE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-trekGreen-400 transition-colors underline"
+                  >
+                    Kigali Alliance Business Center
+                  </a><br />
                   KN 5 Rd, Kigali
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-trekGray-300">+250 788 322 882</span>
+                <a
+                  href="https://wa.me/250788322882"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm sm:text-base text-trekGray-300 hover:text-trekGreen-400 transition-colors underline"
+                >
+                  +250 788 322 882
+                </a>
               </li>
               <li className="flex items-center">
                 <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 flex-shrink-0" />
