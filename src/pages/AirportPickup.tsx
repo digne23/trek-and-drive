@@ -297,7 +297,7 @@ Thank you for your service!`;
       case "email":
         const subject = `Airport Pickup Request - ${formData.name}`;
         const body = message;
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=manzisteve2000@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=trekanddriverentals@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(gmailUrl, '_blank');
         break;
     }
