@@ -1,11 +1,20 @@
-import { useState } from "react";
-import { useVehicles } from "@/contexts/VehicleContext";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Trash2, Edit, Plus, LogOut, Upload, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface Vehicle {
+  id: number;
+  name: string;
+  category: string;
+  passengers: number;
+  price: number;
+  plateNo?: string;
+  image: string;
+}
 
 interface VehicleFormData {
   name: string;
@@ -16,12 +25,60 @@ interface VehicleFormData {
   image: string;
 }
 
+const STORAGE_KEY = 'trek-drive-vehicles';
+
+const initialVehicles: Vehicle[] = [
+  {
+    id: 1,
+    name: "Kia Sorento 2011",
+    category: "Midsize SUV (Crossover)",
+    passengers: 7,
+    price: 60000,
+    image: "/kia_sorento.jpg"
+  },
+  {
+    id: 2,
+    name: "Toyota Prius 2013",
+    category: "Economy",
+    passengers: 5,
+    price: 40000,
+    image: "/toyota_prius_2013.JPG"
+  },
+  {
+    id: 3,
+    name: "Kia Sportage 2009",
+    category: "Compact SUV",
+    passengers: 5,
+    price: 40000,
+    plateNo: "",
+    image: "/kia_sportage.JPG"
+  },
+  {
+    id: 4,
+    name: "Hyundai Tucson 2012",
+    category: "Compact SUV (Crossover)",
+    passengers: 5,
+    price: 40000,
+    plateNo: "RAG 239 G",
+    image: "/hyundai_tucson_2012.JPG"
+  },
+  {
+    id: 5,
+    name: "Hyundai Tucson 2011",
+    category: "Compact SUV (Crossover)",
+    passengers: 5,
+    price: 40000,
+    plateNo: "RAG 774 L",
+    image: "/hyundai_tucson_2011.JPG"
+  }
+];
+
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const { vehicles, addVehicle, updateVehicle, deleteVehicle } = useVehicles();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState<VehicleFormData>({
@@ -32,6 +89,29 @@ const Admin = () => {
     plateNo: "",
     image: ""
   });
+
+  // Load vehicles from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        setVehicles(JSON.parse(stored));
+      } catch (e) {
+        console.error('Failed to parse stored vehicles:', e);
+        setVehicles(initialVehicles);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialVehicles));
+      }
+    } else {
+      setVehicles(initialVehicles);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialVehicles));
+    }
+  }, []);
+
+  // Save to localStorage whenever vehicles change
+  const saveVehicles = (updatedVehicles: Vehicle[]) => {
+    setVehicles(updatedVehicles);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedVehicles));
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +149,7 @@ const Admin = () => {
     setImagePreview("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.category || !formData.image) {
@@ -81,29 +161,26 @@ const Admin = () => {
       return;
     }
 
-    try {
-      if (editingId !== null) {
-        await updateVehicle(editingId, formData);
-        toast({
-          title: "Vehicle Updated",
-          description: `${formData.name} has been updated successfully.`,
-        });
-      } else {
-        await addVehicle(formData);
-        toast({
-          title: "Vehicle Added",
-          description: `${formData.name} has been added to the fleet.`,
-        });
-      }
-
-      resetForm();
-    } catch (error) {
+    if (editingId !== null) {
+      const updatedVehicles = vehicles.map(v =>
+        v.id === editingId ? { ...formData, id: editingId } : v
+      );
+      saveVehicles(updatedVehicles);
       toast({
-        title: "Error",
-        description: "Failed to save vehicle. Please check your Firebase configuration.",
-        variant: "destructive",
+        title: "Vehicle Updated",
+        description: `${formData.name} has been updated successfully.`,
+      });
+    } else {
+      const newId = Math.max(...vehicles.map(v => v.id), 0) + 1;
+      const newVehicle = { ...formData, id: newId };
+      saveVehicles([...vehicles, newVehicle]);
+      toast({
+        title: "Vehicle Added",
+        description: `${formData.name} has been added to the fleet.`,
       });
     }
+
+    resetForm();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,7 +229,8 @@ const Admin = () => {
   const handleDelete = (id: number) => {
     const vehicle = vehicles.find(v => v.id === id);
     if (vehicle && window.confirm(`Are you sure you want to delete ${vehicle.name}?`)) {
-      deleteVehicle(id);
+      const updatedVehicles = vehicles.filter(v => v.id !== id);
+      saveVehicles(updatedVehicles);
       toast({
         title: "Vehicle Deleted",
         description: `${vehicle.name} has been removed from the fleet.`,
@@ -196,7 +274,7 @@ const Admin = () => {
       <div className="bg-trekGreen-600 text-white p-3 sm:p-4 shadow-lg">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center sm:text-left">
-            Trek&Drive Admin Dashboard
+            Trek&Drive Admin Dashboard (Local Storage)
           </h1>
           <Button
             onClick={handleLogout}
@@ -211,6 +289,13 @@ const Admin = () => {
       </div>
 
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>Note:</strong> Changes are currently saved to browser localStorage only.
+            They will only be visible on this device and browser. See instructions below for setting up a shared database.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Form Section */}
           <div>

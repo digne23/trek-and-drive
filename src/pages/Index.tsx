@@ -8,7 +8,35 @@ import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { Link } from "react-router-dom";
-import { useVehicles } from "@/contexts/VehicleContext";
+
+// Sample vehicle data - showing first 3 vehicles on homepage
+const vehicles = [
+  {
+    id: 1,
+    name: "Kia Sorento 2011",
+    category: "Midsize SUV (Crossover)",
+    passengers: 7,
+    price: 60000,
+    image: "/kia_sorento.jpg"
+  },
+  {
+    id: 2,
+    name: "Toyota Prius 2013",
+    category: "Economy",
+    passengers: 5,
+    price: 40000,
+    image: "/toyota_prius_2013.JPG"
+  },
+  {
+    id: 3,
+    name: "Kia Sportage 2009",
+    category: "Compact SUV",
+    passengers: 5,
+    price: 40000,
+    plateNo: "",
+    image: "/kia_sportage.JPG"
+  }
+];
 
 const features = [
   {
@@ -30,28 +58,24 @@ const features = [
 ];
 
 const Index = () => {
-  const { vehicles } = useVehicles();
-  // Show only first 3 vehicles on home page
-  const featuredVehicles = vehicles.slice(0, 3);
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <Hero />
-
+      
       {/* Featured Vehicles */}
       <section id="vehicles" className="container-padding">
         <div className="container mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-trekGray-900">Our Fleet</h2>
             <p className="text-base sm:text-lg lg:text-xl text-trekGray-700 mb-8 sm:mb-12 max-w-4xl mx-auto px-4">
-              Discover our selection of vehicles perfect for any adventure or travel need.
+              Discover our selection of vehicles perfect for any adventure or travel need. 
               Comfort, reliability, and style for every journey.
             </p>
           </div>
-
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
-            {featuredVehicles.map((vehicle) => (
+            {vehicles.map((vehicle) => (
               <VehicleCard key={vehicle.id} {...vehicle} />
             ))}
           </div>
