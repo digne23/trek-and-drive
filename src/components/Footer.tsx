@@ -76,7 +76,7 @@ const Footer = () => {
                   title="Send us an email"
                 >
                   <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-trekGreen-400 mr-2 sm:mr-3 flex-shrink-0" />
-                  Send us an email
+                  trekanddriverentals@gmail.com
                 </a>
               </li>
             </ul>
