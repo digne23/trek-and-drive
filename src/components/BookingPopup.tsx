@@ -97,7 +97,7 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
         const subject = `Booking Request - ${vehicleName}`;
         const body = message;
         // Use Gmail compose URL which opens in browser
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=manzisteve2000@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=trekanddriverentals@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(gmailUrl, '_blank');
         break;
     }
