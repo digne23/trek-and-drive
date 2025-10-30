@@ -3,57 +3,10 @@ import Navbar from "@/components/Navbar";
 import VehicleCard from "@/components/VehicleCard";
 import Footer from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
- 
-
-// Sample vehicle data - in a real app, this would come from an API or database
-const vehicles = [
-  {
-    id: 1,
-    name: "Kia Sorento 2011",
-    category: "Midsize SUV (Crossover)",
-    passengers: 7,
-    price: 60000,
-    image: "/kia_sorento.jpg"
-  },
-  {
-    id: 2,
-    name: "Toyota Prius 2013",
-    category: "Economy",
-    passengers: 5,
-    price: 40000,
-    
-    image: "/toyota_prius_2013.JPG"
-  },
-  {
-    id: 3,
-    name: "Kia Sportage 2009",
-    category: "Compact SUV",
-    passengers: 5,
-    price: 40000,
-    plateNo:"",
-    image: "/kia_sportage.JPG"
-  },
-  {
-    id: 4,
-    name: "Hyundai Tucson 2012",
-    category: "Compact SUV (Crossover)",
-    passengers: 5,
-    price: 40000,
-    plateNo:"RAG 239 G",
-    image: "/hyundai_tucson_2012.JPG"
-  },
-  {
-    id: 5,
-    name: "Hyundai Tucson 2011",
-    category: "Compact SUV (Crossover)",
-    passengers: 5,
-    price: 40000,
-    plateNo:"RAG 774 L",
-    image: "/hyundai_tucson_2011.JPG"
-  }
-];
+import { useVehicles } from "@/contexts/VehicleContext";
 
 const Vehicles = () => {
+  const { vehicles } = useVehicles();
 
   return (
     <div className="min-h-screen flex flex-col">
