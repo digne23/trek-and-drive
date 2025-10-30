@@ -11,7 +11,7 @@ const Vehicles = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <section className="relative bg-gradient-to-br from-trekGreen-100 via-trekGreen-200 to-trekGreen-300 py-8 sm:py-12 lg:py-16 overflow-hidden">
         <div className="absolute inset-0 bg-hero-pattern bg-cover bg-center opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-trekGreen-100/80 via-trekGreen-200/80 to-trekGreen-300/80"></div>
@@ -26,14 +26,23 @@ const Vehicles = () => {
           </div>
         </div>
       </section>
-      
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Vehicle Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          {vehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.id} {...vehicle} />
-          ))}
-        </div>
+        {vehicles.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-600">Loading vehicles...</p>
+            <p className="text-sm text-gray-500 mt-4">
+              If vehicles don't appear, check browser console for errors and verify Firestore security rules.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            {vehicles.map((vehicle) => (
+              <VehicleCard key={vehicle.id} {...vehicle} />
+            ))}
+          </div>
+        )}
       </div>
       
       <Footer />
