@@ -195,7 +195,7 @@ const BookingPopup = ({ isOpen, onClose, vehicleName, vehiclePrice }: BookingPop
                     className="bg-gray-50 text-sm sm:text-base h-10 sm:h-11"
                   />
                   <p className="text-xs sm:text-sm text-trekGreen-700 mt-1">
-                    Returned after drop-off if no damage or missing items.
+                    Refundable after drop-off if no damage or missing items.
                   </p>
                 </div>
               )}
