@@ -69,7 +69,7 @@ const Admin = () => {
     setImagePreview("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.category || !formData.image) {
@@ -81,21 +81,29 @@ const Admin = () => {
       return;
     }
 
-    if (editingId !== null) {
-      updateVehicle(editingId, formData);
+    try {
+      if (editingId !== null) {
+        await updateVehicle(editingId, formData);
+        toast({
+          title: "Vehicle Updated",
+          description: `${formData.name} has been updated successfully.`,
+        });
+      } else {
+        await addVehicle(formData);
+        toast({
+          title: "Vehicle Added",
+          description: `${formData.name} has been added to the fleet.`,
+        });
+      }
+
+      resetForm();
+    } catch (error) {
       toast({
-        title: "Vehicle Updated",
-        description: `${formData.name} has been updated successfully.`,
-      });
-    } else {
-      addVehicle(formData);
-      toast({
-        title: "Vehicle Added",
-        description: `${formData.name} has been added to the fleet.`,
+        title: "Error",
+        description: "Failed to save vehicle. Please check your Firebase configuration.",
+        variant: "destructive",
       });
     }
-
-    resetForm();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

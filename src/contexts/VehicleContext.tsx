@@ -1,7 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 
 interface Vehicle {
   id: number;
+  firebaseId?: string; // Firestore document ID
   name: string;
   category: string;
   passengers: number;
@@ -66,38 +69,106 @@ const initialVehicles: Vehicle[] = [
 ];
 
 const STORAGE_KEY = 'trek-drive-vehicles';
+const VEHICLES_COLLECTION = 'vehicles';
 
 export const VehicleProvider = ({ children }: { children: ReactNode }) => {
-  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
-    // Load from localStorage on initial mount
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch (e) {
-        console.error('Failed to parse stored vehicles:', e);
-        return initialVehicles;
-      }
-    }
-    return initialVehicles;
-  });
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Save to localStorage whenever vehicles change
+  // Initialize: Load from Firestore or migrate from localStorage
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles));
-  }, [vehicles]);
+    const initializeVehicles = async () => {
+      try {
+        const vehiclesRef = collection(db, VEHICLES_COLLECTION);
+        const snapshot = await getDocs(vehiclesRef);
 
-  const addVehicle = (vehicle: Omit<Vehicle, 'id'>) => {
-    const newId = Math.max(...vehicles.map(v => v.id), 0) + 1;
-    setVehicles([...vehicles, { ...vehicle, id: newId }]);
+        if (snapshot.empty) {
+          // No data in Firestore, check localStorage for migration
+          const stored = localStorage.getItem(STORAGE_KEY);
+          let vehiclesToMigrate = initialVehicles;
+
+          if (stored) {
+            try {
+              vehiclesToMigrate = JSON.parse(stored);
+            } catch (e) {
+              console.error('Failed to parse stored vehicles:', e);
+            }
+          }
+
+          // Migrate to Firestore
+          console.log('Migrating vehicles to Firestore...');
+          for (const vehicle of vehiclesToMigrate) {
+            await addDoc(vehiclesRef, vehicle);
+          }
+
+          // Clear localStorage after migration
+          localStorage.removeItem(STORAGE_KEY);
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error initializing vehicles:', error);
+        setIsLoading(false);
+      }
+    };
+
+    initializeVehicles();
+  }, []);
+
+  // Real-time listener for Firestore changes
+  useEffect(() => {
+    const vehiclesRef = collection(db, VEHICLES_COLLECTION);
+
+    const unsubscribe = onSnapshot(vehiclesRef, (snapshot) => {
+      const vehiclesList: Vehicle[] = [];
+      snapshot.forEach((doc) => {
+        vehiclesList.push({
+          ...doc.data() as Vehicle,
+          firebaseId: doc.id,
+        });
+      });
+      setVehicles(vehiclesList);
+    }, (error) => {
+      console.error('Error listening to vehicles:', error);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const addVehicle = async (vehicle: Omit<Vehicle, 'id'>) => {
+    try {
+      const newId = Math.max(...vehicles.map(v => v.id), 0) + 1;
+      const vehicleWithId = { ...vehicle, id: newId };
+      await addDoc(collection(db, VEHICLES_COLLECTION), vehicleWithId);
+    } catch (error) {
+      console.error('Error adding vehicle:', error);
+      throw error;
+    }
   };
 
-  const updateVehicle = (id: number, updatedVehicle: Omit<Vehicle, 'id'>) => {
-    setVehicles(vehicles.map(v => v.id === id ? { ...updatedVehicle, id } : v));
+  const updateVehicle = async (id: number, updatedVehicle: Omit<Vehicle, 'id'>) => {
+    try {
+      const vehicle = vehicles.find(v => v.id === id);
+      if (vehicle?.firebaseId) {
+        const vehicleDoc = doc(db, VEHICLES_COLLECTION, vehicle.firebaseId);
+        await updateDoc(vehicleDoc, { ...updatedVehicle, id });
+      }
+    } catch (error) {
+      console.error('Error updating vehicle:', error);
+      throw error;
+    }
   };
 
-  const deleteVehicle = (id: number) => {
-    setVehicles(vehicles.filter(v => v.id !== id));
+  const deleteVehicle = async (id: number) => {
+    try {
+      const vehicle = vehicles.find(v => v.id === id);
+      if (vehicle?.firebaseId) {
+        await deleteDoc(doc(db, VEHICLES_COLLECTION, vehicle.firebaseId));
+      }
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      throw error;
+    }
   };
 
   return (
