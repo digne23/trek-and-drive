@@ -1,59 +1,42 @@
-
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import VehicleCard from "@/components/VehicleCard";
 import Footer from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
-
-
-// Sample vehicle data - in a real app, this would come from an API or database
-const vehicles = [
-  {
-    id: 1,
-    name: "Kia Sorento 2011",
-    category: "Midsize SUV (Crossover)",
-    passengers: 7,
-    price: 60000,
-    image: "/kia_sorento.jpg"
-  },
-  {
-    id: 2,
-    name: "Toyota Prius 2013",
-    category: "Economy",
-    passengers: 5,
-    price: 40000,
-
-    image: "/toyota_prius_2013.JPG"
-  },
-  {
-    id: 3,
-    name: "Kia Sportage 2009",
-    category: "Compact SUV",
-    passengers: 5,
-    price: 40000,
-    plateNo:"",
-    image: "/kia_sportage.JPG"
-  },
-  {
-    id: 4,
-    name: "Hyundai Tucson 2012",
-    category: "Compact SUV (Crossover)",
-    passengers: 5,
-    price: 40000,
-    plateNo:"RAG 239 G",
-    image: "/hyundai_tucson_2012.JPG"
-  },
-  {
-    id: 5,
-    name: "Hyundai Tucson 2011",
-    category: "Compact SUV (Crossover)",
-    passengers: 5,
-    price: 40000,
-    plateNo:"RAG 774 L",
-    image: "/hyundai_tucson_2011.JPG"
-  }
-];
+import { supabase, Vehicle } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 const Vehicles = () => {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchVehicles();
+  }, []);
+
+  const fetchVehicles = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+
+      setVehicles(data || []);
+    } catch (error: any) {
+      console.error('Error loading vehicles:', error);
+      toast({
+        title: "Error Loading Vehicles",
+        description: "Failed to load vehicles. Please refresh the page.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -76,13 +59,31 @@ const Vehicles = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Vehicle Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          {vehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.id} {...vehicle} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-trekGreen-600"></div>
+            <p className="mt-4 text-trekGray-600">Loading vehicles...</p>
+          </div>
+        ) : vehicles.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-trekGray-600">No vehicles available at the moment.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            {vehicles.map((vehicle) => (
+              <VehicleCard
+                key={vehicle.id}
+                name={vehicle.name}
+                category={vehicle.category}
+                passengers={vehicle.passengers}
+                price={vehicle.price}
+                image={vehicle.image}
+              />
+            ))}
+          </div>
+        )}
       </div>
-      
+
       <Footer />
       <WhatsAppFloat />
     </div>

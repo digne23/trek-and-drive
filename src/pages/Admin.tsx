@@ -3,75 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Trash2, Edit, Plus, LogOut, Upload, Image as ImageIcon } from "lucide-react";
+import { Trash2, Edit, Plus, LogOut, Upload, Image as ImageIcon, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface Vehicle {
-  id: number;
-  name: string;
-  category: string;
-  passengers: number;
-  price: number;
-  plateNo?: string;
-  image: string;
-}
+import { supabase, Vehicle } from "@/lib/supabase";
 
 interface VehicleFormData {
   name: string;
   category: string;
   passengers: number;
   price: number;
-  plateNo?: string;
+  plate_no?: string;
   image: string;
 }
-
-const STORAGE_KEY = 'trek-drive-vehicles';
-
-const initialVehicles: Vehicle[] = [
-  {
-    id: 1,
-    name: "Kia Sorento 2011",
-    category: "Midsize SUV (Crossover)",
-    passengers: 7,
-    price: 60000,
-    image: "/kia_sorento.jpg"
-  },
-  {
-    id: 2,
-    name: "Toyota Prius 2013",
-    category: "Economy",
-    passengers: 5,
-    price: 40000,
-    image: "/toyota_prius_2013.JPG"
-  },
-  {
-    id: 3,
-    name: "Kia Sportage 2009",
-    category: "Compact SUV",
-    passengers: 5,
-    price: 40000,
-    plateNo: "",
-    image: "/kia_sportage.JPG"
-  },
-  {
-    id: 4,
-    name: "Hyundai Tucson 2012",
-    category: "Compact SUV (Crossover)",
-    passengers: 5,
-    price: 40000,
-    plateNo: "RAG 239 G",
-    image: "/hyundai_tucson_2012.JPG"
-  },
-  {
-    id: 5,
-    name: "Hyundai Tucson 2011",
-    category: "Compact SUV (Crossover)",
-    passengers: 5,
-    price: 40000,
-    plateNo: "RAG 774 L",
-    image: "/hyundai_tucson_2011.JPG"
-  }
-];
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -79,6 +22,7 @@ const Admin = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState<VehicleFormData>({
@@ -86,31 +30,37 @@ const Admin = () => {
     category: "",
     passengers: 5,
     price: 0,
-    plateNo: "",
+    plate_no: "",
     image: ""
   });
 
-  // Load vehicles from localStorage on mount
+  // Load vehicles from Supabase on mount
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setVehicles(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to parse stored vehicles:', e);
-        setVehicles(initialVehicles);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialVehicles));
-      }
-    } else {
-      setVehicles(initialVehicles);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialVehicles));
+    if (isAuthenticated) {
+      fetchVehicles();
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  // Save to localStorage whenever vehicles change
-  const saveVehicles = (updatedVehicles: Vehicle[]) => {
-    setVehicles(updatedVehicles);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedVehicles));
+  const fetchVehicles = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+
+      setVehicles(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error Loading Vehicles",
+        description: error.message || "Failed to load vehicles from database.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -142,14 +92,14 @@ const Admin = () => {
       category: "",
       passengers: 5,
       price: 0,
-      plateNo: "",
+      plate_no: "",
       image: ""
     });
     setEditingId(null);
     setImagePreview("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.category || !formData.image) {
@@ -161,26 +111,62 @@ const Admin = () => {
       return;
     }
 
-    if (editingId !== null) {
-      const updatedVehicles = vehicles.map(v =>
-        v.id === editingId ? { ...formData, id: editingId } : v
-      );
-      saveVehicles(updatedVehicles);
-      toast({
-        title: "Vehicle Updated",
-        description: `${formData.name} has been updated successfully.`,
-      });
-    } else {
-      const newId = Math.max(...vehicles.map(v => v.id), 0) + 1;
-      const newVehicle = { ...formData, id: newId };
-      saveVehicles([...vehicles, newVehicle]);
-      toast({
-        title: "Vehicle Added",
-        description: `${formData.name} has been added to the fleet.`,
-      });
-    }
+    setIsLoading(true);
 
-    resetForm();
+    try {
+      if (editingId !== null) {
+        // Update existing vehicle
+        const { error } = await supabase
+          .from('vehicles')
+          .update({
+            name: formData.name,
+            category: formData.category,
+            passengers: formData.passengers,
+            price: formData.price,
+            plate_no: formData.plate_no || null,
+            image: formData.image,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editingId);
+
+        if (error) throw error;
+
+        toast({
+          title: "Vehicle Updated",
+          description: `${formData.name} has been updated successfully.`,
+        });
+      } else {
+        // Insert new vehicle
+        const { error } = await supabase
+          .from('vehicles')
+          .insert([{
+            name: formData.name,
+            category: formData.category,
+            passengers: formData.passengers,
+            price: formData.price,
+            plate_no: formData.plate_no || null,
+            image: formData.image
+          }]);
+
+        if (error) throw error;
+
+        toast({
+          title: "Vehicle Added",
+          description: `${formData.name} has been added to the fleet.`,
+        });
+      }
+
+      resetForm();
+      await fetchVehicles();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save vehicle.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,7 +203,7 @@ const Admin = () => {
         category: vehicle.category,
         passengers: vehicle.passengers,
         price: vehicle.price,
-        plateNo: vehicle.plateNo || "",
+        plate_no: vehicle.plate_no || "",
         image: vehicle.image
       });
       setEditingId(id);
@@ -226,15 +212,33 @@ const Admin = () => {
     }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     const vehicle = vehicles.find(v => v.id === id);
     if (vehicle && window.confirm(`Are you sure you want to delete ${vehicle.name}?`)) {
-      const updatedVehicles = vehicles.filter(v => v.id !== id);
-      saveVehicles(updatedVehicles);
-      toast({
-        title: "Vehicle Deleted",
-        description: `${vehicle.name} has been removed from the fleet.`,
-      });
+      setIsLoading(true);
+      try {
+        const { error } = await supabase
+          .from('vehicles')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Vehicle Deleted",
+          description: `${vehicle.name} has been removed from the fleet.`,
+        });
+
+        await fetchVehicles();
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to delete vehicle.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -274,25 +278,36 @@ const Admin = () => {
       <div className="bg-trekGreen-600 text-white p-3 sm:p-4 shadow-lg">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center sm:text-left">
-            Trek&Drive Admin Dashboard (Local Storage)
+            Trek&Drive Admin Dashboard (Supabase)
           </h1>
-          <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="bg-white text-trekGreen-600 hover:bg-gray-100 w-full sm:w-auto"
-            size="sm"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={fetchVehicles}
+              variant="outline"
+              className="bg-white text-trekGreen-600 hover:bg-gray-100"
+              size="sm"
+              disabled={isLoading}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="bg-white text-trekGreen-600 hover:bg-gray-100"
+              size="sm"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
-        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800">
-            <strong>Note:</strong> Changes are currently saved to browser localStorage only.
-            They will only be visible on this device and browser. See instructions below for setting up a shared database.
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <p className="text-sm text-green-800">
+            <strong>Connected to Supabase!</strong> All changes are now saved to the database and synced across all devices in real-time.
           </p>
         </div>
 
@@ -313,6 +328,7 @@ const Admin = () => {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g., Toyota Prius 2013"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -324,6 +340,7 @@ const Admin = () => {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     placeholder="e.g., Economy, SUV, Luxury"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -337,6 +354,7 @@ const Admin = () => {
                     min="1"
                     max="15"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -349,16 +367,18 @@ const Admin = () => {
                     onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
                     min="0"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="plateNo">Plate Number (Optional)</Label>
+                  <Label htmlFor="plate_no">Plate Number (Optional)</Label>
                   <Input
-                    id="plateNo"
-                    value={formData.plateNo}
-                    onChange={(e) => setFormData({ ...formData, plateNo: e.target.value })}
+                    id="plate_no"
+                    value={formData.plate_no}
+                    onChange={(e) => setFormData({ ...formData, plate_no: e.target.value })}
                     placeholder="e.g., RAG 239 G"
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -370,6 +390,7 @@ const Admin = () => {
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                     placeholder="e.g., /car_image.jpg"
                     required
+                    disabled={isLoading}
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Enter the path to the image file in the public folder or upload an image below
@@ -392,6 +413,7 @@ const Admin = () => {
                             accept="image/*"
                             onChange={handleImageUpload}
                             className="hidden"
+                            disabled={isLoading}
                           />
                         </Label>
                         <p className="text-xs text-gray-500 mt-2 text-center sm:text-left">
@@ -422,8 +444,9 @@ const Admin = () => {
                   <Button
                     type="submit"
                     className="flex-1 bg-trekGreen-500 hover:bg-trekGreen-600 text-sm sm:text-base"
+                    disabled={isLoading}
                   >
-                    {editingId !== null ? "Update Vehicle" : "Add Vehicle"}
+                    {isLoading ? "Saving..." : editingId !== null ? "Update Vehicle" : "Add Vehicle"}
                   </Button>
                   {editingId !== null && (
                     <Button
@@ -431,6 +454,7 @@ const Admin = () => {
                       variant="outline"
                       onClick={resetForm}
                       className="flex-1 text-sm sm:text-base"
+                      disabled={isLoading}
                     >
                       Cancel
                     </Button>
@@ -446,50 +470,58 @@ const Admin = () => {
               <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
                 Current Fleet ({vehicles.length})
               </h2>
-              <div className="space-y-3 sm:space-y-4 max-h-[400px] sm:max-h-[500px] lg:max-h-[600px] overflow-y-auto">
-                {vehicles.map((vehicle) => (
-                  <Card key={vehicle.id} className="p-3 sm:p-4 hover:shadow-md transition-shadow">
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                      <img
-                        src={vehicle.image}
-                        alt={vehicle.name}
-                        className="w-full sm:w-20 md:w-24 h-32 sm:h-20 md:h-24 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-bold text-base sm:text-lg">{vehicle.name}</h3>
-                        <p className="text-xs sm:text-sm text-gray-600">{vehicle.category}</p>
-                        <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 text-xs sm:text-sm">
-                          <span>👥 {vehicle.passengers}</span>
-                          <span className="font-semibold text-trekGreen-600">
-                            {vehicle.price} RWF/day
-                          </span>
+              {isLoading && vehicles.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  Loading vehicles...
+                </div>
+              ) : (
+                <div className="space-y-3 sm:space-y-4 max-h-[400px] sm:max-h-[500px] lg:max-h-[600px] overflow-y-auto">
+                  {vehicles.map((vehicle) => (
+                    <Card key={vehicle.id} className="p-3 sm:p-4 hover:shadow-md transition-shadow">
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                        <img
+                          src={vehicle.image}
+                          alt={vehicle.name}
+                          className="w-full sm:w-20 md:w-24 h-32 sm:h-20 md:h-24 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-bold text-base sm:text-lg">{vehicle.name}</h3>
+                          <p className="text-xs sm:text-sm text-gray-600">{vehicle.category}</p>
+                          <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 text-xs sm:text-sm">
+                            <span>👥 {vehicle.passengers}</span>
+                            <span className="font-semibold text-trekGreen-600">
+                              {vehicle.price} RWF/day
+                            </span>
+                          </div>
+                          {vehicle.plate_no && (
+                            <p className="text-xs text-gray-500 mt-1">Plate: {vehicle.plate_no}</p>
+                          )}
                         </div>
-                        {vehicle.plateNo && (
-                          <p className="text-xs text-gray-500 mt-1">Plate: {vehicle.plateNo}</p>
-                        )}
+                        <div className="flex sm:flex-col gap-2 justify-end sm:justify-start">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(vehicle.id)}
+                            className="text-blue-600 hover:text-blue-700 flex-1 sm:flex-none"
+                            disabled={isLoading}
+                          >
+                            <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDelete(vehicle.id)}
+                            className="text-red-600 hover:text-red-700 flex-1 sm:flex-none"
+                            disabled={isLoading}
+                          >
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex sm:flex-col gap-2 justify-end sm:justify-start">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(vehicle.id)}
-                          className="text-blue-600 hover:text-blue-700 flex-1 sm:flex-none"
-                        >
-                          <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDelete(vehicle.id)}
-                          className="text-red-600 hover:text-red-700 flex-1 sm:flex-none"
-                        >
-                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </Card>
           </div>
         </div>
