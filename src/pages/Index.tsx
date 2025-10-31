@@ -47,11 +47,16 @@ const Index = () => {
         .order('id', { ascending: true })
         .limit(3);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
+      console.log('Fetched vehicles:', data);
       setVehicles(data || []);
     } catch (error: any) {
       console.error('Error loading vehicles:', error);
+      console.error('Error details:', error.message, error.code);
     } finally {
       setIsLoading(false);
     }
