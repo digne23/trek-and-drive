@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User, Mail, Phone } from "lucide-react";
 
-const LongDistanceTravel = () => {
+const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -219,7 +219,7 @@ const LongDistanceTravel = () => {
   const buildMessage = () => {
     return `Hello Trek & Drive Team,
 
-I would like to inquire about your long distance travel service.
+I would like to get in touch with you.
 Please find my details and message below:
 
 👤 PERSONAL INFORMATION:
@@ -259,7 +259,7 @@ Thank you for your service!`;
         break;
 
       case "email":
-        const subject = `Long Distance Travel Inquiry - ${formData.name}`;
+        const subject = `Contact Inquiry - ${formData.name}`;
         const body = message;
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=trekanddriverentals@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(gmailUrl, '_blank');
@@ -278,11 +278,11 @@ Thank you for your service!`;
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-trekGray-900">
-              Request Long Distance Travel Service
+              Contact Us
             </h1>
             <p className="text-lg sm:text-xl text-trekGray-800 mb-8">
-              Planning a long journey? Let us make your trip comfortable and safe.
-              Contact us for your long distance travel needs.
+              Have a question or need assistance? We're here to help!
+              Get in touch with us and we'll respond as soon as possible.
             </p>
           </div>
         </div>
@@ -294,7 +294,7 @@ Thank you for your service!`;
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
               <h2 className="text-2xl sm:text-3xl font-bold text-trekGray-900 mb-6 sm:mb-8 text-center">
-                Contact Us
+                Send Us a Message
               </h2>
 
               <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
@@ -380,7 +380,7 @@ Thank you for your service!`;
                       value={formData.message}
                       onChange={handleInputChange}
                       className={`mt-1 ${errors.message ? 'border-red-500' : ''}`}
-                      placeholder="Please provide details about your long distance travel plans, including destinations, dates, number of passengers, etc."
+                      placeholder="Tell us how we can help you..."
                       rows={5}
                     />
                     {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
@@ -448,4 +448,4 @@ Thank you for your service!`;
   );
 };
 
-export default LongDistanceTravel;
+export default ContactUs;
