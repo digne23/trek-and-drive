@@ -9,6 +9,7 @@ import Vehicles from "./pages/Vehicles";
 import About from "./pages/About";
 import AirportPickup from "./pages/AirportPickup";
 import LongDistanceTravel from "./pages/LongDistanceTravel";
+import ContactUs from "./pages/ContactUs";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/airportpickup" element={<AirportPickup />} />
           <Route path="/longdistancetravel" element={<LongDistanceTravel />} />
+          <Route path="/contact" element={<ContactUs />} />
           <Route path="/about" element={<About />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
