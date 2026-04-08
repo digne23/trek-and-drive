@@ -25,6 +25,7 @@ const Navbar = () => {
             <Link to="/vehicles" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">Vehicles</Link>
             <Link to="/airportpickup" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">Airport Pickup</Link>
             <Link to="/longdistancetravel" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base whitespace-nowrap">Long Distance</Link>
+            <Link to="/payperhour" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base whitespace-nowrap">Rent Per Hour</Link>
             <Link to="/about" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">About Us</Link>
             <Link to="/contact" className="text-trekGray-800 hover:text-trekGreen-600 transition-colors text-sm lg:text-base">Contact</Link>
             <Link to="/vehicles">
@@ -75,6 +76,13 @@ const Navbar = () => {
                 onClick={closeMenu}
               >
                 Long Distance Travel
+              </Link>
+              <Link
+                to="/payperhour"
+                className="px-4 py-3 text-trekGray-800 hover:text-trekGreen-600 hover:bg-trekGreen-50 transition-colors text-base font-medium"
+                onClick={closeMenu}
+              >
+                Rent Per Hour
               </Link>
               <Link
                 to="/about"
