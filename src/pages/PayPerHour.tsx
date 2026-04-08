@@ -24,6 +24,7 @@ const PayPerHour = () => {
     phone: "",
     date: "",
     time: "",
+    endTime: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -56,7 +57,8 @@ const PayPerHour = () => {
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
     if (!formData.date) newErrors.date = "Date is required";
-    if (!formData.time) newErrors.time = "Time is required";
+    if (!formData.time) newErrors.time = "Start time is required";
+    if (!formData.endTime) newErrors.endTime = "End time is required";
     if (selectedTier === null) newErrors.tier = "Please select a package";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -66,17 +68,22 @@ const PayPerHour = () => {
     if (!validate()) return;
 
     const tier = pricingTiers[selectedTier!];
+    let phone = formData.phone;
+    if (formData.countryCode === "+250" && phone.startsWith("0")) {
+      phone = phone.slice(1);
+    }
     const message =
       `Hello Trek&Drive! I'd like to book a Pay Per Hour rental.\n\n` +
       `*Name:* ${formData.name}\n` +
-      `*Phone:* ${formData.countryCode} ${formData.phone}\n` +
+      `*Phone:* ${formData.countryCode} ${phone}\n` +
       (formData.email ? `*Email:* ${formData.email}\n` : "") +
       `*Package:* ${tier.label} - ${tier.total.toLocaleString()} RWF\n` +
       `*Date:* ${formData.date}\n` +
-      `*Time:* ${formData.time}`;
+      `*Start Time:* ${formData.time}\n` +
+      `*End Time:* ${formData.endTime}`;
 
     const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/250788888888?text=${encoded}`, "_blank");
+    window.open(`https://wa.me/250788322882?text=${encoded}`, "_blank");
   };
 
   return (
@@ -230,22 +237,24 @@ const PayPerHour = () => {
                 {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
               </div>
 
-              {/* Date & Time */}
+              {/* Date */}
+              <div>
+                <Label htmlFor="date" className="flex items-center gap-2 mb-2 text-trekGray-700 font-medium">
+                  <Clock className="w-4 h-4" /> Date *
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  min={today}
+                  value={formData.date}
+                  onChange={(e) => handleInputChange("date", e.target.value)}
+                  className={errors.date ? "border-red-500" : ""}
+                />
+                {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
+              </div>
+
+              {/* Start Time & End Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="date" className="flex items-center gap-2 mb-2 text-trekGray-700 font-medium">
-                    <Clock className="w-4 h-4" /> Date *
-                  </Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    min={today}
-                    value={formData.date}
-                    onChange={(e) => handleInputChange("date", e.target.value)}
-                    className={errors.date ? "border-red-500" : ""}
-                  />
-                  {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
-                </div>
                 <div>
                   <Label htmlFor="time" className="flex items-center gap-2 mb-2 text-trekGray-700 font-medium">
                     <Clock className="w-4 h-4" /> Start Time *
@@ -258,6 +267,19 @@ const PayPerHour = () => {
                     className={errors.time ? "border-red-500" : ""}
                   />
                   {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="endTime" className="flex items-center gap-2 mb-2 text-trekGray-700 font-medium">
+                    <Clock className="w-4 h-4" /> End Time *
+                  </Label>
+                  <Input
+                    id="endTime"
+                    type="time"
+                    value={formData.endTime}
+                    onChange={(e) => handleInputChange("endTime", e.target.value)}
+                    className={errors.endTime ? "border-red-500" : ""}
+                  />
+                  {errors.endTime && <p className="text-red-500 text-sm mt-1">{errors.endTime}</p>}
                 </div>
               </div>
 
