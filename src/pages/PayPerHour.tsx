@@ -41,8 +41,21 @@ const PayPerHour = () => {
     { code: "+33", country: "France", flag: "\u{1F1EB}\u{1F1F7}" },
   ];
 
+  const calcEndTime = (startTime: string, hours: number) => {
+    const [h, m] = startTime.split(":").map(Number);
+    const endH = (h + hours) % 24;
+    return `${String(endH).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  };
+
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const next = { ...prev, [field]: value };
+      // Auto-fill end time when start time changes and a tier is selected
+      if (field === "time" && selectedTier !== null && value) {
+        next.endTime = calcEndTime(value, pricingTiers[selectedTier].hours);
+      }
+      return next;
+    });
     if (errors[field]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -123,6 +136,12 @@ const PayPerHour = () => {
                 key={index}
                 onClick={() => {
                   setSelectedTier(index);
+                  if (formData.time) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      endTime: calcEndTime(prev.time, pricingTiers[index].hours),
+                    }));
+                  }
                   if (errors.tier) {
                     setErrors((prev) => {
                       const next = { ...prev };
